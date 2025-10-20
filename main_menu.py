@@ -5,6 +5,7 @@ import shutil
 
 from mainMenuWidgets import *
 from utilities import *
+from icon_downloader import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -17,6 +18,9 @@ class MainWindow(QMainWindow):
 
         #Check if user is new, create a folder in users/documents
         self.verifySpacedRep_Folder()
+
+        #Check if icon resources is already downloaded
+        self.verifyIconDownloads()
 
         # Layout setup
         self.layouts()
@@ -118,7 +122,7 @@ class MainWindow(QMainWindow):
                     background: #f70202;
                 }
             """)
-
+    
         self.button_utils_layout.addWidget(self.context.add_folder)
         self.button_utils_layout.addWidget(self.context.del_folder)
         self.button_utils_layout.addWidget(self.context.mod_folder)
@@ -169,14 +173,15 @@ class MainWindow(QMainWindow):
                 }
                 QLabel::hover {
                     background-color: #b3a68b;
-                    border-radius: 10px; 
+                    border-radius: 10px;
+                    color: black; 
                 }
             """)
 
         self.subject_columns_layout.addWidget(subjects_label, stretch=column_stretch[0])
         self.subject_columns_layout.addWidget(folders_help_label, stretch=column_stretch[1], alignment=Qt.AlignmentFlag.AlignLeft)
         self.subject_columns_layout.addWidget(card_help_label, stretch=column_stretch[2], alignment=Qt.AlignmentFlag.AlignLeft)
-        
+
         subject_columns.setLayout(self.subject_columns_layout)
         self.folder_pane_layout.addWidget(subject_columns) #Add the layout containing columns label to a spaceless layout to create table
 
@@ -238,7 +243,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error deleting folder")
         
-        
     def modifyFolder(self):
         self.cardOptions = cardOptionsPopup(self.context)
         self.cardOptions.show()
@@ -256,6 +260,12 @@ class MainWindow(QMainWindow):
             print(f"'SpacedRep' directory ensured at: {spacedrep_path}")
         except Exception as e:
             print(f"Error creating 'SpacedRep' folder: {e}")
+    
+    def verifyIconDownloads(self):
+        repo_url = f"https://github.com/IrickMarvinGalan/SpacedRep_IconResources.git"  # Link to the repository
+        destination_folder = "C:\\Users\\GALAN\\Documents\\SpacedRep\\Resources"  # Destination for Icon Download
+
+        clone_github_repo(repo_url, destination_folder)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
