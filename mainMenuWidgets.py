@@ -5,6 +5,7 @@ from utilities import *
 import os
 
 from cardScreen import *
+from reviewScreen import *
 
 class scrollArea(QScrollArea):
     def __init__(self, context, primary_layout, strch=None, 
@@ -49,7 +50,7 @@ class scrollArea(QScrollArea):
 
         if self.area_type == 'Subject':
             for directory in prog_dir.iterdir():
-                if directory.is_dir():
+                if directory.is_dir() and directory.name != "Resources":
                     folder = self.folderWidget(self.context, directory.name, self.area_type)
                     scroll_layout.addWidget(folder)
 
@@ -106,7 +107,7 @@ class scrollArea(QScrollArea):
             self.mousePressEvent = lambda event: self.folder_clicked(event, directory_name, area_type)
 
             if self.area_type == 'Subfolder': #Assign a double click event for starting a review session
-                self.mouseDoubleClickEvent = lambda event: self.startReview(event, self.context.subtopic_path) 
+                self.mouseDoubleClickEvent = lambda event: self.startReview(event) 
                 '''Modify Later for additional filters sent'''
 
         def folder_clicked(self, event, directory_name, area_type):
@@ -143,11 +144,11 @@ class scrollArea(QScrollArea):
                     '''If a click is triggered and folder creation menu is visible, update the selection label for the said popup'''
                     self.context.folder_popup.update_parent_folder_display()
 
-        def startReview(self, event, card_data_path):
+        def startReview(self, event):
             '''Modify and add the json file name to the data path'''
             if event.type() == QEvent.Type.MouseButtonDblClick:
-                print('Review Started')
-                print(f'Path Directory: {card_data_path}')
+                self.review_pane = cardReviewWindow(self.context)
+                self.review_pane.show()
 
 class createFolderPopup(QWidget):
     def __init__(self, context):
@@ -301,7 +302,8 @@ class cardCountHelp(QWidget):
 
         self.setWindowFlags(
             Qt.WindowType.Tool | #Make it a tool window instead of QWidget
-            Qt.WindowType.WindowStaysOnTopHint #Make the window stay on top
+            Qt.WindowType.WindowStaysOnTopHint | #Make the window stay on top
+            Qt.WindowType.WindowCloseButtonHint
         )
 
         self.resize(300, 150)
@@ -355,24 +357,3 @@ class folderHelpPopup(QWidget):
         layout.addWidget(description)
 
         self.setLayout(layout)
-    
-class interactableLabel(QWidget):
-    def __init__(self, label, popup):
-        super().__init__()
-        self.label = QLabel(label)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.label)
-        self.setLayout(layout)
-        self.popup = popup
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #decfad;
-                border-radius: 10px;
-            } 
-        """)
-
-    def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.popup.show()
