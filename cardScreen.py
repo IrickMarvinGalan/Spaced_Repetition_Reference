@@ -6,7 +6,6 @@ from PyQt6.QtGui import QFont, QColor, QPalette
 from PyQt6.QtCore import Qt
 import json, os, sys
 
-
 class Card:
     def __init__(self, front, back):
         self.front = front
