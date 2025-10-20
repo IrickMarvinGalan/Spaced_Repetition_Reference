@@ -214,7 +214,33 @@ class UIContext:
                 self.review.setEnabled(True)
                 self.review.setGraphicsEffect(opacities[2])
 
+    def widgetOpacitySetter(self, widget:QWidget, percent):
+        opacity = QGraphicsOpacityEffect()
+        opacity.setOpacity(percent)
+        widget.setGraphicsEffect(opacity)
+    
     def update_card_count(self, count: int):
         """Update card count label dynamically"""
         if self.card_count_label:
             self.card_count_label.setText(str(count))
+    
+class interactableLabel(QWidget):
+    def __init__(self, label, popup):
+        super().__init__()
+        self.label = QLabel(label)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.label)
+        self.setLayout(layout)
+        self.popup = popup
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #decfad;
+                border-radius: 10px;
+            } 
+        """)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.popup.show()
